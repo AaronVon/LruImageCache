@@ -2,6 +2,7 @@ package com.pioneer.aaron.lruimagecache;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +18,14 @@ import java.util.LinkedList;
 public class LazyAdapter extends BaseAdapter {
     private LayoutInflater mLayoutInflater;
     private LinkedList<HashMap<String, Object>> items;
+    private ImageLoader imageLoader;
+
     static final String KEY_URL = "url";
 
     public LazyAdapter(Context context, LinkedList<HashMap<String, Object>> items) {
         mLayoutInflater = LayoutInflater.from(context);
         this.items = items;
+        imageLoader = new ImageLoader();
     }
 
     @Override
@@ -52,9 +56,8 @@ public class LazyAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        ImageLoader imageLoader = new ImageLoader();
         imageLoader.displayImage(items.get(position).get(KEY_URL).toString(), holder.imageView);
-
+        Log.d("COUNT", "aaaa");
         return convertView;
     }
 
