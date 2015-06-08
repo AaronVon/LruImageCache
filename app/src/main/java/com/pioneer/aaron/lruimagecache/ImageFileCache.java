@@ -6,9 +6,8 @@ import android.os.Environment;
 import android.os.StatFs;
 import android.util.Log;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -17,7 +16,7 @@ import java.util.Comparator;
  */
 public class ImageFileCache {
     private static final String CACHE_DIR = "ImgCache";
-    private static final String WHOLESALE_CONV = ".cache";
+    private static final String WHOLESALE_CONV = "";
     private static final int MB = 1024 * 1024;
     private static final int CACHE_SIZE = 10;
     private static final int FREE_SD_SPACE_NEEDED_TO_CACHE = 10;
@@ -55,27 +54,28 @@ public class ImageFileCache {
             return;
         }
 
-        String filename = convertUrl2FileName(imgUrl);
-        String dir = getCacheDirectory();
-        File dirFile = new File(dir);
-        if (!dirFile.exists()) {
-            dirFile.mkdir();
-            Log.d("EXTERNAL_STORAGE", dir);
-            if (dirFile.exists()) {
-                Log.d("EXTERNAL_STORAGE", "directory created");
-            } else {
-                Log.d("EXTERNAL_STORAGE", "directory create failed");
-            }
-        }
-        File file = new File(dir + "/" + filename);
         try {
-            file.createNewFile();
-            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file));
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bufferedOutputStream);
-            bufferedOutputStream.flush();
-            bufferedOutputStream.close();
-        } catch (Exception e) {
-            Log.w("DEBUG", e.toString());
+            String fileName = convertUrl2FileName(imgUrl);
+            String dirCache = getCacheDirectory();
+            File cachePath = new File(dirCache);
+            File file = new File(dirCache + fileName);
+            if (!cachePath.exists()) {
+                cachePath.mkdir();
+                if (cachePath.exists()) {
+                    Log.d("EXTERNAL_STORAGE", "cache path created");
+                } else {
+                    Log.d("EXTERNAL_STORAGE", "cache path create failed");
+                }
+            }
+            if (!file.exists()) {
+                if (!file.createNewFile()) {
+                    Log.d("FIlE LOG", "failed");
+                } else {
+                    Log.d("FILE LOG", "created");
+                }
+            }
+        } catch (IOException e) {
+            Log.d("IOEXCEPTION", e.toString());
         }
     }
 
