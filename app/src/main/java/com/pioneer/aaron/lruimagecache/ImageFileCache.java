@@ -8,7 +8,10 @@ import android.util.Log;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -17,7 +20,7 @@ import java.util.Comparator;
  */
 public class ImageFileCache {
     private static final String CACHE_DIR = "ImgCache";
-    private static final String WHOLESALE_CONV = ".cache";
+    private static final String WHOLESALE_CONV = ".jpg";
     private static final int MB = 1024 * 1024;
     private static final int CACHE_SIZE = 10;
     private static final int FREE_SD_SPACE_NEEDED_TO_CACHE = 10;
@@ -28,10 +31,12 @@ public class ImageFileCache {
      * get bitmap from SD card
      * @return bitmap*/
     public Bitmap getImage(String imageUrl) {
-        String imgPath = getSDcardPath() + "/" + convertUrl2FileName(imageUrl);
+        String imgPath = getCacheDirectory() + "/" + convertUrl2FileName(imageUrl);
+        Log.d("decode image", imgPath);
         File imgFile = new File(imgPath);
+
         if (imgFile.exists()) {
-            Bitmap bitmap = BitmapFactory.decodeFile(imgPath);
+            Bitmap bitmap = BitmapFactory.decodeFile(imgPath, null);
             if (null == bitmap) {
                 imgFile.delete();
             } else {
@@ -54,29 +59,33 @@ public class ImageFileCache {
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             return;
         }
-
-        String filename = convertUrl2FileName(imgUrl);
-        String dir = getCacheDirectory();
-        File dirFile = new File(dir);
-        if (!dirFile.exists()) {
-            dirFile.mkdir();
-            Log.d("EXTERNAL_STORAGE", dir);
-            if (dirFile.exists()) {
-                Log.d("EXTERNAL_STORAGE", "directory created");
-            } else {
-                Log.d("EXTERNAL_STORAGE", "directory create failed");
-            }
-        }
-        File file = new File(dir + "/" + filename);
         try {
-            file.createNewFile();
+            String fileName = convertUrl2FileName(imgUrl);
+            String dir = getCacheDirectory();
+            File dirCache = new File(dir);
+            File file = new File(dir + "/" + fileName);
+            if (!dirCache.exists()) {
+                if (dirCache.mkdir()) {
+                    Log.d("EXTERNAL_STORAGE", "path created");
+                } else {
+                    Log.d("EXTERNAL_STORAGE", "path create failed");
+                }
+            }
+            if (!file.exists()) {
+                if (file.createNewFile()) {
+                    Log.d("FILE LOG", "file created");
+                } else {
+                    Log.d("FILE LOG", "file create failed");
+                }
+            }
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file));
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bufferedOutputStream);
             bufferedOutputStream.flush();
             bufferedOutputStream.close();
-        } catch (Exception e) {
-            Log.w("DEBUG", e.toString());
+        } catch (IOException e) {
+
         }
+
     }
 
     /**
@@ -137,7 +146,7 @@ public class ImageFileCache {
     /**
      * 获取 URL 中的图片名称*/
     private String convertUrl2FileName(String imageUrl) {
-        return imageUrl.substring(imageUrl.lastIndexOf("/") + 1, imageUrl.length()) + WHOLESALE_CONV;
+        return imageUrl.substring(imageUrl.lastIndexOf("/") + 1, imageUrl.length());
     }
 
     /**
