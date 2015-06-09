@@ -10,7 +10,7 @@ import java.net.URL;
 /**
  * Created by Aaron on 6/7/15.
  */
-public class getImageFromHTTP extends AsyncTask{
+public class GetImageFromHTTP extends AsyncTask{
     @Override
     protected Object doInBackground(Object[] params) {
         Bitmap bitmap = null;

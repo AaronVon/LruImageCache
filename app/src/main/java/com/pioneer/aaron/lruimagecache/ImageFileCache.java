@@ -51,11 +51,11 @@ public class ImageFileCache {
         if (null == bitmap) {
             return;
         }
-        if (FREE_SD_SPACE_NEEDED_TO_CACHE > freeSapceOnSD()) {
+        /*if (FREE_SD_SPACE_NEEDED_TO_CACHE > freeSapceOnSD()) {
             //not enough space on SD card
             removeCache(getCacheDirectory());
             return;
-        }
+        }*/
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             return;
         }
