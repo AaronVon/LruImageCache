@@ -13,6 +13,7 @@ import java.net.URL;
 public class GetImageFromHTTP extends AsyncTask{
     @Override
     protected Object doInBackground(Object[] params) {
+
         Bitmap bitmap = null;
         try {
             bitmap = BitmapFactory.decodeStream(new URL(params[0].toString()).openStream());

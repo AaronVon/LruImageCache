@@ -57,7 +57,6 @@ public class LazyAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-
         imageLoader.displayImage(items.get(position).get(KEY_URL).toString(), holder.imageView);
 //        mAsyncImageLoader.loadImage(items.get(position).get(KEY_URL).toString(), holder.imageView);
 

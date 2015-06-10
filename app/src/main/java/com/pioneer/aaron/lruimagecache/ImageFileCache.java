@@ -2,6 +2,7 @@ package com.pioneer.aaron.lruimagecache;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 import android.util.Log;
@@ -78,6 +79,8 @@ public class ImageFileCache {
                     Log.d("FILE LOG", "file create failed");
                 }
             }
+
+            //cache image res into file location
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file));
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bufferedOutputStream);
             bufferedOutputStream.flush();
@@ -130,8 +133,14 @@ public class ImageFileCache {
      * */
     public int freeSapceOnSD() {
         StatFs fs = new StatFs(Environment.getExternalStorageDirectory().getPath());
-        double sdFreeMB = ((double) fs.getAvailableBlocksLong() * (double) fs.getBlockSizeLong()) / MB;
+        double sdFreeMB = 0;
+        if (Build.VERSION.SDK_INT <= 15) {
+            sdFreeMB = ((double) fs.getBlockSize() * (double) fs.getBlockSize()) / MB;
+        } else {
+            sdFreeMB = ((double) fs.getAvailableBlocksLong() * (double) fs.getBlockSizeLong()) / MB;
+        }
         return (int) sdFreeMB;
+
     }
 
     /**
